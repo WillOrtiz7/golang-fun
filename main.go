@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject/handlers"
+	"awesomeProject/utils"
 	"log"
 	"log/slog"
 	"net/http"
@@ -10,6 +11,11 @@ import (
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+
+	utils.InitEnv()
+
+	utils.InitDatabase()
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /player/{id}", handlers.GetPlayer)
