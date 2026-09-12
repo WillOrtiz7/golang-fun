@@ -2,11 +2,9 @@ package handlers
 
 import (
 	"awesomeProject/models"
+	"awesomeProject/services"
 	"encoding/json"
-	"log/slog"
 	"net/http"
-	"os"
-	"strconv"
 )
 
 var players = []models.Player{
@@ -23,27 +21,22 @@ var players = []models.Player{
 }
 
 func GetPlayer(w http.ResponseWriter, r *http.Request) {
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	w.Header().Set("Content-Type", "application/json")
 	id := r.PathValue("id")
 
-	for _, player := range players {
-		if strconv.Itoa(player.Id) == id {
-			bytes, err := json.Marshal(player)
-			if err != nil {
-				logger.Error("Error encoding player to JSON", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			w.WriteHeader(http.StatusOK)
-			_, err = w.Write(bytes)
-			if err != nil {
-				return
-			}
-			return
+	player, err := services.GetPlayerById(id)
+	if err != nil {
+		switch err.Error() {
+		case "PLAYER_NOT_FOUND":
+			http.Error(w, err.Error(), http.StatusNotFound)
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+		return
 	}
 
-	w.WriteHeader(http.StatusNotFound)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(player)
 
+	return
 }
