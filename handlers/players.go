@@ -1,24 +1,10 @@
 package handlers
 
 import (
-	"awesomeProject/models"
 	"awesomeProject/services"
 	"encoding/json"
 	"net/http"
 )
-
-var players = []models.Player{
-	{
-		Id:        1,
-		FirstName: "James",
-		LastName:  "Rodriguez",
-	},
-	{
-		Id:        2,
-		FirstName: "Carlos",
-		LastName:  "Valderrama",
-	},
-}
 
 func GetPlayer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
